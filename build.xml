@@ -1,0 +1,32 @@
+<project default="resolve" xmlns:ivy="antlib:org.apache.ivy.ant">
+  
+  <taskdef resource="org/apache/catalina/ant/catalina.tasks"/>
+    
+  <path id="compile.classpath">
+    <fileset dir="lib/jars">
+      <include name="*.jar"/>
+    </fileset>
+    <fileset dir="lib/bundles">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+  
+  <target name="init">
+    <mkdir dir="build/bin"/>
+    <mkdir dir="dist/lib"/>
+  </target>
+  
+  <target name="resolve">
+    <ivy:retrieve pattern="lib/[type]s/[artifact]-[revision].[ext]"/>
+  </target>
+  
+  <target name="compile" depends="init">
+    <javac srcdir="src" destdir="build/bin" target="1.7" source="1.7" debuglevel="lines,vars,source" debug="true">
+      <classpath refid="compile.classpath"/>
+    </javac>
+  </target>
+  
+  <target name="dist" depends="compile">
+    <jar jarfile="dist/lib/webb.jar" basedir="build/bin" includes="ch/kerbtier/webb/**" />
+  </target>
+</project>
