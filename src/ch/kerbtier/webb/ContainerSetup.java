@@ -22,44 +22,39 @@ public class ContainerSetup {
     }
     
     contextContainer.addComponent(contextInfo);
-    contextContainer.getComponent(Livecycles.class).startContext(contextContainer);
     contextContainer.start();
+    contextContainer.getComponent(Livecycles.class).startContext(contextContainer);
   }
 
   public void destroyedContext(DefaultPicoContainer contextContainer) {
-    contextContainer.stop();
     contextContainer.getComponent(Livecycles.class).stopContext(contextContainer);
+    contextContainer.stop();
     contextContainer.dispose();
   }
 
   public void createdSession(DefaultPicoContainer sessionContainer) {
-    sessionContainer.getComponent(Livecycles.class).startSession(sessionContainer);
     sessionContainer.start();
-
-    System.out.println("session setp");
+    sessionContainer.getComponent(Livecycles.class).startSession(sessionContainer);
   }
 
   public void destroyedSession(DefaultPicoContainer sessionContainer) {
-    sessionContainer.stop();
     sessionContainer.getComponent(Livecycles.class).stopSession(sessionContainer);
+    sessionContainer.stop();
+    sessionContainer.dispose();
   }
 
   public void createdRequest(DefaultPicoContainer requestContainer, ServletRequest req, ServletResponse resp) {
-    requestContainer.getComponent(Livecycles.class).startRequest(requestContainer);
-    
     requestContainer.addComponent(req);
     requestContainer.addComponent(resp);
-    
     requestContainer.start();
-    
-    System.out.println("request setp");
+    requestContainer.getComponent(Livecycles.class).startRequest(requestContainer);
   }
 
   public void destroyRequest(DefaultPicoContainer requestContainer) {
-    requestContainer.stop();
-
     requestContainer.getComponent(Livecycles.class).stopRequest(
         requestContainer);
+    requestContainer.stop();
+    requestContainer.dispose();
   }
 
 }

@@ -111,7 +111,6 @@ public class MustacheRenderer {
   }
 
   public void render(Writer pw, Object model) {
-    
     if(model == null) {
       throw new RuntimeException("cannot evaluate view for null model");
     }

@@ -26,7 +26,7 @@ public class ServerHandler extends AbstractHandler {
       HttpServletResponse resp) throws IOException, ServletException {
 
     String p = req.getPathInfo();
-    if (p.matches(".*\\.(png|js|css)")) {
+    if (p.matches(".*\\.(png|js|css|html)")) {
       ResourceHandler rs = new ResourceHandler();
       
       rs.setResourceBase("public");
