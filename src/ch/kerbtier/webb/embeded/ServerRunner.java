@@ -10,26 +10,40 @@ import org.picocontainer.DefaultPicoContainer;
 import ch.kerbtier.webb.ContainerSetup;
 
 public class ServerRunner {
+  
+  private String context;
+  private String livecycles;
+  private String address;
+  private int port;
+  
+
+  // config vars
+
+  // context
   private Server server;
   private ContainerSetup cs = new ContainerSetup();
   private DefaultPicoContainer contextContainer;
   private DefaultPicoContainer sessionContainer;
 
-  public static void main(String[] args) throws UnknownHostException {
-    new ServerRunner("default", "ch.kerbtier.doda.DodaLivecycles", 8002);
+  public ServerRunner(String context, String livecycles, String address, int port) {
+    this.context = context;
+    this.livecycles = livecycles;
+    this.address = address;
+    this.port = port;
   }
 
-  public ServerRunner(String context, String livecycles, int port)
-      throws UnknownHostException {
+  /**
+   * will start up the server and wait till the server terminates.
+   * @throws UnknownHostException
+   */
+  public void start() throws UnknownHostException {
     contextContainer = new DefaultPicoContainer();
-    cs.initializedContext(contextContainer, new EmbededContextInfo(context),
-        livecycles);
+    cs.initializedContext(contextContainer, new EmbededContextInfo(context), livecycles);
 
     sessionContainer = new DefaultPicoContainer(contextContainer);
     cs.createdSession(sessionContainer);
 
-    server = new Server(new InetSocketAddress(
-        InetAddress.getByName("127.0.0.1"), port));
+    server = new Server(new InetSocketAddress(InetAddress.getByName(address), port));
     server.setHandler(new ServerHandler(this));
 
     try {
@@ -39,7 +53,7 @@ public class ServerRunner {
       System.out.println(server.getConnectors()[0]);
 
       System.out.println("started server...");
-      // server.join();
+      server.join();
 
     } catch (InterruptedException e) {
       e.printStackTrace();
@@ -61,6 +75,15 @@ public class ServerRunner {
 
   public void stop() {
     System.out.println("exiting...");
-    System.exit(0);
+    new Thread() {
+      @Override
+      public void run() {
+        try {
+          server.stop();
+        } catch (Exception ex) {
+          ex.printStackTrace();
+        }
+      }
+    }.start();
   }
 }

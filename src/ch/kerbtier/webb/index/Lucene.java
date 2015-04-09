@@ -20,6 +20,8 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TotalHitCountCollector;
 import org.apache.lucene.store.Directory;
@@ -32,12 +34,12 @@ public class Lucene {
   private IndexReader reader = null;
   private IndexSearcher searcher = null;
   private IndexWriter writer = null;
-  
+
   public Lucene(String path) {
     try {
       // remove old index, has problems when locked otherwise
       FileUtils.deleteDirectory(new File(path));
-      
+
       dir = FSDirectory.open(new File(path));
 
       Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_48);
@@ -71,12 +73,12 @@ public class Lucene {
     }
     return searcher;
   }
-  
+
   private synchronized IndexReader getIndexReader() {
     getSearcher();
     return reader;
   }
-  
+
   public int hits(String defaultField, String query) {
     try {
       TotalHitCountCollector collector = new TotalHitCountCollector();
@@ -87,13 +89,24 @@ public class Lucene {
     }
   }
 
-  public List<Integer> search(String defaultField, String query, int from, int docs) {
-    
+  public List<Integer> search(String defaultField, String query, int from, int docs, String... order) {
     List<Integer> ids = new ArrayList<Integer>();
     try {
-      TopDocs td = getSearcher().search(getQuery(defaultField, query), null, from + docs);
-      
-      for(int cnt = from; cnt < td.scoreDocs.length; cnt++) {
+
+      TopDocs td = null;
+      if (order.length > 0) {
+
+        SortField[] sfs = new SortField[order.length];
+        for (int cnt = 0; cnt < order.length; cnt++) {
+          sfs[cnt] = new SortField(order[cnt], SortField.Type.STRING);
+        }
+        Sort sort = new Sort(sfs);
+        td = getSearcher().search(getQuery(defaultField, query), from + docs, sort);
+      } else {
+        td = getSearcher().search(getQuery(defaultField, query), from + docs);
+      }
+
+      for (int cnt = from; cnt < td.scoreDocs.length; cnt++) {
         Document doc = getIndexReader().document(td.scoreDocs[cnt].doc);
         ids.add(Integer.parseInt(doc.get("id")));
       }
@@ -104,24 +117,40 @@ public class Lucene {
 
     return ids;
   }
-  
+
+  private Query getQuery(String query) throws ParseException {
+    return getQuery(null, query);
+  }
+
   private Query getQuery(String defaultField, String query) throws ParseException {
-    if(query.trim().length() > 0) {
+    if (query.trim().length() > 0) {
       Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_48);
-      QueryParser parser = new QueryParser(Version.LUCENE_48, defaultField,
-          analyzer);
+      QueryParser parser = new QueryParser(Version.LUCENE_48, defaultField, analyzer);
       return parser.parse(query);
     }
     return new MatchAllDocsQuery();
   }
 
+  public void delete(Object obj) {
+    String query = DocumentCreator.createQuery(obj);
+    try {
+      writer.deleteDocuments(getQuery(query));
+      writer.commit();
+      searcher = null;
+    } catch (IOException | ParseException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   public synchronized void update(Object obj) {
     Document doc = DocumentCreator.create(obj);
+    String query = DocumentCreator.createQuery(obj);
     try {
+      writer.deleteDocuments(getQuery(query));
       writer.addDocument(doc);
       writer.commit();
       searcher = null;
-    } catch (IOException e) {
+    } catch (IOException | ParseException e) {
       throw new RuntimeException(e);
     }
   }

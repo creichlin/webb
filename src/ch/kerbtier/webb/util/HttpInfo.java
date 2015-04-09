@@ -2,6 +2,8 @@ package ch.kerbtier.webb.util;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -43,5 +45,45 @@ public class HttpInfo {
     }
     
     return path;
+  }
+
+  public Map<String, String[]> getParameterMap() {
+    return request.getParameterMap();
+  }
+
+  /**
+   * returns url with protocol, server, port, path and querystring
+   * @return
+   */
+  public String getURL() {
+      StringBuffer receivingURL = request.getRequestURL();
+      String queryString = request.getQueryString();
+      if (queryString != null && queryString.length() > 0) {
+        receivingURL.append("?").append(queryString);
+      }
+      return receivingURL.toString();
+    }
+
+  public HTTPMethod getMethod() {
+    return HTTPMethod.valueOf(request.getMethod());
+  }
+
+  public HttpInfoParameter getParameter(String key) {
+    return new HttpInfoParameter(request.getParameterMap().get(key));
+  }
+
+  public Iterable<String> parameterNames() {
+    return request.getParameterMap().keySet();
+  }
+
+  public  Map<String, String> getParameterValueMap() {
+    Map<String, String> params = new HashMap<>();
+    
+    for(String name: parameterNames()) {
+      params.put(name, getParameter(name).asString());
+    }
+    
+    
+    return params;
   }
 }

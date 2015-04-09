@@ -1,6 +1,5 @@
 package ch.kerbtier.webb.render;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -22,8 +21,7 @@ public class MustacheRenderer {
 
   public MustacheRenderer(final ContextInfo ci) {
 
-    FileTemplateLoader loader = new FileTemplateLoader(new File(
-        ci.getTemplatePath()));
+    FileTemplateLoader loader = new FileTemplateLoader(ci.getLocalPath().resolve("templates").toFile());
 
     loader.setSuffix("");
 
@@ -36,7 +34,7 @@ public class MustacheRenderer {
           throws IOException {
         StringWriter sw = new StringWriter();
         render(sw, model);
-        return sw.toString();
+        return new Handlebars.SafeString(sw.toString());
       }
 
     });

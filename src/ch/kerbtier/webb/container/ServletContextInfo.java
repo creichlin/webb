@@ -1,5 +1,8 @@
 package ch.kerbtier.webb.container;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import javax.servlet.ServletContext;
 
 import ch.kerbtier.webb.util.ContextInfo;
@@ -24,12 +27,17 @@ public class ServletContextInfo implements ContextInfo {
   }
 
   @Override
-  public String getTemplatePath() {
-    return subject.getRealPath("templates");
+  public String getPath() {
+    return subject.getContextPath();
   }
 
   @Override
-  public String getPath() {
-    return subject.getContextPath();
+  public Path getLocalPath() {
+    return Paths.get(subject.getRealPath(".")).toAbsolutePath().normalize();
+  }
+
+  @Override
+  public String getParameter(String name) {
+    return subject.getInitParameter(name);
   }
 }

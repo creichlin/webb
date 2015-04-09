@@ -7,9 +7,14 @@ public class IndexSelection {
   private String query = "";
   private int page;
   private int pageSize = 20;
+  private List<String> order = new ArrayList<String>();
 
+  public void addOrder(String name) {
+    order.add(name);
+  }
+  
   public List<Integer> list(Lucene index) {
-    return index.search("content", query, page * pageSize, pageSize);
+    return index.search("content", query, page * pageSize, pageSize, order.toArray(new String[order.size()]));
   }
 
   public int maxPage(Lucene index) {

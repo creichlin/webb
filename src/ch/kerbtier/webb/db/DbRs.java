@@ -1,6 +1,5 @@
 package ch.kerbtier.webb.db;
 
-import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,29 +15,20 @@ public class DbRs {
   public <T> T populate(Class<T> type) {
     try {
       T obj = type.newInstance();
-
-      @SuppressWarnings("rawtypes")
-      Class current = type;
-
-      while (current != null) {
-        for (Field field : current.getDeclaredFields()) {
-          Column a = field.getAnnotation(Column.class);
-          if (a != null) {
-            field.setAccessible(true);
-            String columnName = Introspector.getColumnName(field);
-
-            if (String.class.isAssignableFrom(field.getType())) {
-              field.set(obj, getString(columnName));
-            } else if (Integer.TYPE.isAssignableFrom(field.getType()) || Integer.class.isAssignableFrom(field.getType())) {
-              field.set(obj, getInt(columnName));
-            } else if (Long.TYPE.isAssignableFrom(field.getType()) || Long.class.isAssignableFrom(field.getType())) {
-              field.set(obj, getInt(columnName));
-            } else if (Date.class.isAssignableFrom(field.getType())) {
-              field.set(obj, getDate(columnName));
-            }
-          }
+      
+      TableModel<T> model = Introspector.getModel(type);
+      for(ColumnModel<T> cool: model) {
+        if(cool.isString()) {
+          cool.set(obj, getString(cool.getName()));
+        } else if(cool.isInteger()) {
+          cool.set(obj, getInt(cool.getName()));
+        } else if(cool.isLong()) {
+          cool.set(obj, getLong(cool.getName()));
+        } else if(cool.is(Date.class)) {
+          cool.set(obj, getDate(cool.getName()));
+        } else if(cool.is(BigDecimal.class)) {
+          cool.set(obj, getBigDecimal(cool.getName()));
         }
-        current = current.getSuperclass();
       }
 
       return obj;
@@ -103,7 +93,7 @@ public class DbRs {
     return ii;
   }
 
-  public BigDecimal getDecimal(String name) throws SQLException {
+  public BigDecimal getBigDecimal(String name) throws SQLException {
     return rs.getBigDecimal(name);
   }
 }

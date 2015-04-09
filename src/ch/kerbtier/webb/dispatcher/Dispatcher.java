@@ -5,9 +5,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import ch.kerbtier.webb.util.HTTPMethod;
+
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Dispatcher {
   String pattern() default NULL;
+  HTTPMethod method() default HTTPMethod.UNDEFINED;
   public static final String NULL = "NULL_oZShvXLv0RMTBhe61cN7";
 }

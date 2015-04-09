@@ -1,7 +1,7 @@
 package ch.kerbtier.webb.embeded;
 
-import java.io.File;
-import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import ch.kerbtier.webb.util.ContextInfo;
 
@@ -18,17 +18,18 @@ public class EmbededContextInfo implements ContextInfo {
   }
 
   @Override
-  public String getTemplatePath() {
-    try {
-      return new File("templates").getCanonicalPath().toString();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+  public String getPath() {
+    return "";
   }
 
   @Override
-  public String getPath() {
-    return "";
+  public Path getLocalPath() {
+    return Paths.get(".").toAbsolutePath();
+  }
+
+  @Override
+  public String getParameter(String string) {
+    return null;
   }
 
 }

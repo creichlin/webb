@@ -9,7 +9,12 @@ public class Configuration {
   private Properties properties = null;
 
   public Configuration(ContextInfo contextInfo) {
+    String configName = contextInfo.getParameter("config-name");
     String cname = contextInfo.getName();
+    
+    if(configName != null) {
+      cname = configName + "." + cname;
+    }
 
     cname = "/etc/webb/" + cname + ".properties";
 
@@ -27,6 +32,16 @@ public class Configuration {
 
   public String get(String key, String def) {
     return properties.getProperty(key, def);
+  }
+
+  public boolean get(String key, boolean def) {
+    String value = get(key, "" + def);
+    
+    if("true".equals(value) || "yes".equals(value)) {
+      return true;
+    }
+    
+    return false;
   }
 
 }

@@ -14,3 +14,7 @@ hs_err_pid*
 # eclipse trash
 .classpath
 .project
+
+/bin
+/dist
+/tests

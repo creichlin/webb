@@ -9,6 +9,7 @@
     <fileset dir="lib/bundles">
       <include name="*.jar"/>
     </fileset>
+    <pathelement location="../lanthanum/bin"/>
   </path>
   
   <target name="init">
@@ -16,17 +17,24 @@
     <mkdir dir="dist/lib"/>
   </target>
   
-  <target name="resolve">
+  <target name="resolve" depends="init">
     <ivy:retrieve pattern="lib/[type]s/[artifact]-[revision].[ext]"/>
   </target>
   
-  <target name="compile" depends="init">
-    <javac srcdir="src" destdir="build/bin" target="1.7" source="1.7" debuglevel="lines,vars,source" debug="true">
+  <target name="compile" depends="resolve">
+    <javac srcdir="src" destdir="build/bin" target="1.7" source="1.7" debug="true">
       <classpath refid="compile.classpath"/>
     </javac>
   </target>
   
   <target name="dist" depends="compile">
     <jar jarfile="dist/lib/webb.jar" basedir="build/bin" includes="ch/kerbtier/webb/**" />
+  </target>
+  
+  <target name="publish-local" depends="dist" description="Publish this build into local repository">
+    <ivy:resolve/>
+    <ivy:publish pubrevision="1.0.1" status="release" resolver="local" forcedeliver="true" overwrite="true" conf="*">
+      <artifacts pattern="dist/lib/[artifact].[ext]"/>
+    </ivy:publish>
   </target>
 </project>

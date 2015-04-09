@@ -11,6 +11,7 @@ import java.lang.annotation.Target;
 public @interface Column {
 
   String name() default NULL;
+  boolean key() default false;
 
   public static final String NULL = "NULL_oZShvXLv0RMTBhe61cN7";
 
