@@ -1,7 +1,6 @@
 package ch.kerbtier.webb.db;
 
 import java.lang.reflect.Field;
-import java.math.BigDecimal;
 import java.util.Date;
 
 public class ColumnModel<T> {
@@ -10,7 +9,7 @@ public class ColumnModel<T> {
   private String name;
   private boolean key;
   
-  public ColumnModel(TableModel<T> tableModel, Field field, boolean key) {
+  public ColumnModel(Field field, boolean key) {
     this.field = field;
     this.key = key;
     this.name = Introspector.getColumnName(field);

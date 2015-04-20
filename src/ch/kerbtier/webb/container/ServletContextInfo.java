@@ -40,4 +40,9 @@ public class ServletContextInfo implements ContextInfo {
   public String getParameter(String name) {
     return subject.getInitParameter(name);
   }
+
+  @Override
+  public String getVersion() {
+    return subject.getMajorVersion() + "." + subject.getMinorVersion();
+  }
 }

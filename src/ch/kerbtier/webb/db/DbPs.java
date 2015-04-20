@@ -9,6 +9,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
+import ch.kerbtier.webb.db.exceptions.NoMatchFound;
+
 import com.google.common.collect.Iterables;
 
 public class DbPs {
@@ -37,7 +39,7 @@ public class DbPs {
     if (date != null) {
       ps.setTimestamp(i, new java.sql.Timestamp(date.getTime()));
     } else {
-      ps.setDate(i, null);
+      ps.setTimestamp(i, null);
     }
   }
 
@@ -101,6 +103,16 @@ public class DbPs {
     return rs.getInt(1);
   }
 
+  public <T> T selectFirst(Class<T> type) throws SQLException {
+    List<T> list = select(type);
+
+    if(list.size() == 0) {
+      throw new NoMatchFound("no match found for " + ps);
+    }
+    
+    return list.get(0);
+  }
+
   public <T> List<T> select(Class<T> type) throws SQLException {
     List<T> list = new ArrayList<T>();
 
@@ -113,10 +125,18 @@ public class DbPs {
     return list;
   }
 
-  public <T> List<T> selectEach(Class<T> type, List<Integer> in) throws SQLException {
-    List<T> list = new ArrayList<T>();
+  /**
+   * calls for each id in ids the select method which executes the query.
+   * id is set as the first slot/?
+   * @param type
+   * @param ids
+   * @return
+   * @throws SQLException
+   */
+  public <T> List<T> selectEach(Class<T> type, List<Integer> ids) throws SQLException {
+    List<T> list = new ArrayList<>();
 
-    for (Integer i : in) {
+    for (Integer i : ids) {
       setInt(1, i);
       list.addAll(select(type));
     }
@@ -124,25 +144,48 @@ public class DbPs {
     return list;
   }
 
-  public void setEntityColumns(Object object) throws SQLException {
-    TableModel<Object> tm = (TableModel<Object>) Introspector.getModel(object.getClass());
-    setColumns(object, tm.columns());
+  public int setEntityColumns(Object object) throws SQLException {
+    return setEntityColumns(object, 1);
   }
   
-  public void setEntityKeys(Object object) throws SQLException {
+  public int setEntityColumns(Object object, int index) throws SQLException {
     TableModel<Object> tm = (TableModel<Object>) Introspector.getModel(object.getClass());
-    setColumns(object, tm.keys());
+    return setColumns(object, tm.columns(), index);
   }
   
-  public void setEntity(Object object) throws SQLException {
+  public int setEntityForColumns(Object object, int index, String...cols) throws SQLException {
+    TableModel<Object> tm = (TableModel<Object>) Introspector.getModel(object.getClass());
+    List<ColumnModel<Object>> models = new ArrayList<>();
+    
+    for(String field: cols) {
+      models.add(tm.getColumn(field));
+    }
+    
+    return setColumns(object, models, index);
+  }
+
+  public int setEntityKeys(Object object) throws SQLException {
+    return setEntityKeys(object, 1);
+  }
+  
+  public int setEntityKeys(Object object, int index) throws SQLException {
+    TableModel<Object> tm = (TableModel<Object>) Introspector.getModel(object.getClass());
+    return setColumns(object, tm.keys(), index);
+  }
+
+  public int setEntity(Object object) throws SQLException {
+    return setEntity(object, 1);
+  }
+  
+  public int setEntity(Object object, int index) throws SQLException {
     TableModel<Object> tm = (TableModel<Object>) Introspector.getModel(object.getClass());
     Iterable<ColumnModel<Object>> cols = Iterables.concat(tm.columns(), tm.keys());
     
-    setColumns(object, cols);
+    return setColumns(object, cols, index);
   }
 
-  private void setColumns(Object object, Iterable<ColumnModel<Object>> cols) throws SQLException {
-    int index = 1;
+  private int setColumns(Object object, Iterable<ColumnModel<Object>> cols, int start) throws SQLException {
+    int index = start;
     for(ColumnModel<Object> cm: cols) {
       if(cm.isString()) {
         setString(index++, cm.getString(object));
@@ -151,10 +194,11 @@ public class DbPs {
       } else if(cm.isInteger()) {
         setInt(index++, cm.getInteger(object));
       } else if(cm.is(Date.class)) {
-        setDate(index++, cm.get(object, Date.class));
+        setDateTime(index++, cm.get(object, Date.class));
       } else if(cm.is(BigDecimal.class)) {
         setBigDecimal(index++, cm.get(object, BigDecimal.class));
       }
     }
+    return index;
   }
 }

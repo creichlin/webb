@@ -85,15 +85,22 @@ public class ImageTransformer {
 
   public BufferedImage transform(ByteBuffer ba, String code) {
     try {
-      ByteArrayInputStream bais = new ByteArrayInputStream(ba.array());
+      ByteArrayInputStream bais;
+      try {
+        bais = new ByteArrayInputStream(ba.array());
+      } catch (UnsupportedOperationException e) {
+        byte[] data = new byte[ba.remaining()];
+        ba.get(data);
+        bais = new ByteArrayInputStream(data);
+      }
       BufferedImage bi = ImageIO.read(bais);
       bais.close();
-      
+
       List<BufferedImage> bis = new ArrayList<>();
       bis.add(bi);
-      
+
       return transformImages(bis, code);
-      
+
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

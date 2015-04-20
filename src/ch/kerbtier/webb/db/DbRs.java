@@ -25,7 +25,7 @@ public class DbRs {
         } else if(cool.isLong()) {
           cool.set(obj, getLong(cool.getName()));
         } else if(cool.is(Date.class)) {
-          cool.set(obj, getDate(cool.getName()));
+          cool.set(obj, getDateTime(cool.getName()));
         } else if(cool.is(BigDecimal.class)) {
           cool.set(obj, getBigDecimal(cool.getName()));
         }

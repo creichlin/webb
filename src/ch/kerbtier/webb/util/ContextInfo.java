@@ -10,4 +10,6 @@ public interface ContextInfo {
   String getPath();
 
   String getParameter(String string);
+  
+  String getVersion();
 }

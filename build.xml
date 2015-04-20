@@ -18,7 +18,9 @@
   </target>
   
   <target name="resolve" depends="init">
-    <ivy:retrieve pattern="lib/[type]s/[artifact]-[revision].[ext]"/>
+    <ivy:retrieve pattern="lib/default/[type]s/[artifact]-[revision].[ext]" conf="default" refresh="true"/>
+    <ivy:retrieve pattern="lib/container/[type]s/[artifact]-[revision].[ext]" conf="container" refresh="true"/>
+    <ivy:retrieve pattern="lib/test/[type]s/[artifact]-[revision].[ext]" conf="test" refresh="true"/>
   </target>
   
   <target name="compile" depends="resolve">
@@ -28,7 +30,7 @@
   </target>
   
   <target name="dist" depends="compile">
-    <jar jarfile="dist/lib/webb.jar" basedir="build/bin" includes="ch/kerbtier/webb/**" />
+    <jar jarfile="dist/lib/webb.jar" basedir="build/bin" includes="ch/kerbtier/**" />
   </target>
   
   <target name="publish-local" depends="dist" description="Publish this build into local repository">

@@ -32,4 +32,9 @@ public class EmbededContextInfo implements ContextInfo {
     return null;
   }
 
+  @Override
+  public String getVersion() {
+    return "embeded!";
+  }
+
 }

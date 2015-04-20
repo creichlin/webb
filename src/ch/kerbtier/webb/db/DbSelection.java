@@ -64,7 +64,7 @@ public class DbSelection<T> {
       max = maxPage;
     }
 
-    List<Page> ints = new ArrayList<Page>();
+    List<Page> ints = new ArrayList<>();
 
     for (int cnt = min; cnt < max; cnt++) {
       ints.add(new Page(cnt, cnt == page));
