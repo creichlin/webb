@@ -107,28 +107,31 @@ public class ImageTransformer {
   }
 
   public BufferedImage transformImages(List<BufferedImage> imgs, String code) {
+    if (code != null && code.length() > 0) {
+      try {
 
-    try {
+        InputStream is = new ByteArrayInputStream(code.getBytes("UTF-8"));
 
-      InputStream is = new ByteArrayInputStream(code.getBytes("UTF-8"));
+        ANTLRInputStream input = new ANTLRInputStream(is);
+        T2dLexer lexer = new T2dLexer(input);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        T2dParser parser = new T2dParser(tokens);
 
-      ANTLRInputStream input = new ANTLRInputStream(is);
-      T2dLexer lexer = new T2dLexer(input);
-      CommonTokenStream tokens = new CommonTokenStream(lexer);
-      T2dParser parser = new T2dParser(tokens);
+        OperationContext tree = parser.operation(); // parse
 
-      OperationContext tree = parser.operation(); // parse
+        T2dExecuteVisitor visitor = new T2dExecuteVisitor(imgs);
 
-      T2dExecuteVisitor visitor = new T2dExecuteVisitor(imgs);
+        visitor.visit(tree);
 
-      visitor.visit(tree);
+        return visitor.getLastOperation();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+      return null;
 
-      return visitor.getLastOperation();
-    } catch (Exception e) {
-      e.printStackTrace();
+    } else {
+      return imgs.get(imgs.size() - 1);
     }
-    return null;
-
   }
 
 }

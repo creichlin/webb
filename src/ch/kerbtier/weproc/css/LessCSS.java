@@ -18,7 +18,9 @@ public class LessCSS implements Processor {
   @Override
   public String process(Source source) {
     try {
-      return lessCompiler.compile(source.get());
+      String code = lessCompiler.compile("BEFORE: " + source.get());
+      code = code.replaceAll("\\n", "\n");
+      return code;
     } catch (LessException e) {
       String name = source.getName();
       System.out.println("file " + name + " " + e.getMessage());

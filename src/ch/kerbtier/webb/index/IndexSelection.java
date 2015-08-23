@@ -7,13 +7,17 @@ public class IndexSelection {
   private String query = "";
   private int page;
   private int pageSize = 20;
-  private List<String> order = new ArrayList<String>();
+  private List<String> order = new ArrayList<>();
 
   public void addOrder(String name) {
     order.add(name);
   }
   
   public List<Integer> list(Lucene index) {
+    
+    System.out.println("###### " + query + " " + page * pageSize + " " + pageSize + " " + order.toArray(new String[order.size()]));
+    
+    
     return index.search("content", query, page * pageSize, pageSize, order.toArray(new String[order.size()]));
   }
 
@@ -43,7 +47,7 @@ public class IndexSelection {
       max = maxPage;
     }
 
-    List<Page> ints = new ArrayList<Page>();
+    List<Page> ints = new ArrayList<>();
 
     for (int cnt = min; cnt < max; cnt++) {
       ints.add(new Page(cnt, cnt == page));

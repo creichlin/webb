@@ -11,7 +11,7 @@ public class DispatcherMatcher {
 
   private String pattern;
   private HTTPMethod httpMethod = HTTPMethod.GET;
-  private List<CallMatcher> callMatchers = new ArrayList<CallMatcher>();
+  private List<CallMatcher> callMatchers = new ArrayList<>();
   
   public DispatcherMatcher(Object subject) {
     
@@ -42,7 +42,7 @@ public class DispatcherMatcher {
       Call call = cm.getCall(path, method);
       if(call != null) {
         if(calls == null) {
-          calls = new ArrayList<Call>();
+          calls = new ArrayList<>();
         }
         calls.add(call);
       }
@@ -52,5 +52,14 @@ public class DispatcherMatcher {
       return calls;
     }
     return Collections.emptyList();
+  }
+  
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    for(CallMatcher cm: callMatchers) {
+      sb.append(cm.getPattern() + ":" + cm.getMethod() + "\n");
+    }
+    return sb.toString();
   }
 }

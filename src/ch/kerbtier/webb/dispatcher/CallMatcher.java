@@ -58,4 +58,12 @@ public class CallMatcher {
     return null;
   }
 
+  public HTTPMethod getMethod() {
+    return httpMethod;
+  }
+
+  public Pattern getPattern() {
+    return pattern;
+  }
+
 }

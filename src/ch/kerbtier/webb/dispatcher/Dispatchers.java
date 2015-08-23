@@ -39,4 +39,12 @@ public class Dispatchers {
     return calls;
   }
 
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    for(DispatcherMatcher dm: dispatchers) {
+      sb.append(dm.toString());
+    }
+    return sb.toString();
+  }
 }
