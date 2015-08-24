@@ -1,10 +1,12 @@
-# eclipse trash
-.classpath
-.project
-
+#eclipse
+/.classpath
+/.project
 /bin
-/dist
+
+#gradle
+/.gradle
 /build
-/lib
+
+#weird stuff
 /tests/images/out
 /tests/pictomizer/out

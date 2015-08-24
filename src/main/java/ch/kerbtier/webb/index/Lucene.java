@@ -2,6 +2,7 @@ package ch.kerbtier.webb.index;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -40,10 +41,10 @@ public class Lucene {
       // remove old index, has problems when locked otherwise
       FileUtils.deleteDirectory(new File(path));
 
-      dir = FSDirectory.open(new File(path));
+      dir = FSDirectory.open(Paths.get(path));
 
-      Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_48);
-      IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_48, analyzer);
+      Analyzer analyzer = new StandardAnalyzer();
+      IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
 
       iwc.setOpenMode(OpenMode.CREATE);
 
@@ -124,8 +125,8 @@ public class Lucene {
 
   private Query getQuery(String defaultField, String query) throws ParseException {
     if (query.trim().length() > 0) {
-      Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_48);
-      QueryParser parser = new QueryParser(Version.LUCENE_48, defaultField, analyzer);
+      Analyzer analyzer = new StandardAnalyzer();
+      QueryParser parser = new QueryParser(defaultField, analyzer);
       return parser.parse(query);
     }
     return new MatchAllDocsQuery();
