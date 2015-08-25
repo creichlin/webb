@@ -46,7 +46,9 @@ dependencies {
   compile 'com.github.jknack:handlebars:2.2.3'
   compile 'org.picocontainer:picocontainer:2.15'
   compile 'com.yahoo.platform.yui:yuicompressor:2.4.8'
-  compile 'com.google.javascript:closure-compiler:r2388'
+  compile('com.google.javascript:closure-compiler:r2388') {
+    exclude group: 'org.apache.ant'
+  }
   compile 'com.google.guava:guava:18.0'
   
   compile 'ch.kerbtier.lanthanum:lanthanum:0.1.+'
