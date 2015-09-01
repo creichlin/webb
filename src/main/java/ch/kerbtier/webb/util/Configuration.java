@@ -4,11 +4,18 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
 
+import ch.kerbtier.esdi.Inject;
+import ch.kerbtier.webb.di.InjectSingleton;
+
+@Inject
 public class Configuration {
 
   private Properties properties = null;
+  
+  @InjectSingleton
+  private ContextInfo contextInfo;
 
-  public Configuration(ContextInfo contextInfo) {
+  public Configuration() {
     String configName = contextInfo.getParameter("config-name");
     String cname = contextInfo.getName();
     

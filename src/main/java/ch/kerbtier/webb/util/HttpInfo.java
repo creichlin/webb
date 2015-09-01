@@ -7,14 +7,15 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class HttpInfo {
+import ch.kerbtier.esdi.Inject;
+import ch.kerbtier.webb.di.InjectRequest;
 
+@Inject
+public class HttpInfo {
+  
+  @InjectRequest
   private HttpServletRequest request;
   
-  public HttpInfo(HttpServletRequest request) {
-    this.request = request;
-  }
-
   /**
    * returns the decoded path minus context path with no / in front
    * it does not depend on the url-mapping in the servlet, will always return the same path unlike getPathInfo

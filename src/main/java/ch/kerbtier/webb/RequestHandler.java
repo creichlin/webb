@@ -15,18 +15,22 @@ import ch.kerbtier.webb.di.InjectSingleton;
 public class RequestHandler extends HttpServlet {
 
   private static final long serialVersionUID = 1L;
-  
+
   @Override
-  protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
-    
-    Esdi.get(Livecycles.class, InjectSingleton.class).request();
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    doIt(req, resp);
   }
 
   @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    doIt(req, resp);
+  }
+
+  private void doIt(HttpServletRequest req, HttpServletResponse resp) {
+    ContextListener.containerSetup.createdRequest((HttpServletRequest) req, (HttpServletResponse) resp);
 
     Esdi.get(Livecycles.class, InjectSingleton.class).request();
+
+    ContextListener.containerSetup.destroyRequest();
   }
 }

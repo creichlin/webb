@@ -1,7 +1,7 @@
 package ch.kerbtier.webb;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import ch.kerbtier.esdi.Esdi;
@@ -20,8 +20,8 @@ public class ContainerSetup {
   private SessionProvider sessionProvider = new SessionProvider();
   private ThreadLocalProvider requestProvider = new ThreadLocalProvider();
   
-  private ThreadLocal<ServletRequest> servletRequest = new ThreadLocal<>();
-  private ThreadLocal<ServletResponse> servletResponse = new ThreadLocal<>();
+  private ThreadLocal<HttpServletRequest> servletRequest = new ThreadLocal<>();
+  private ThreadLocal<HttpServletResponse> servletResponse = new ThreadLocal<>();
   private ThreadLocal<HttpSession> httpSession = new ThreadLocal<>();
 
   public void init(String livecycles) {
@@ -30,8 +30,8 @@ public class ContainerSetup {
     Esdi.register(InjectRequest.class, requestProvider);
     Esdi.register(InjectSession.class, sessionProvider);
 
-    Esdi.onRequestFor(ServletRequest.class).with(InjectRequest.class).deliverThreadLocal(servletRequest);
-    Esdi.onRequestFor(ServletResponse.class).with(InjectRequest.class).deliverThreadLocal(servletResponse);
+    Esdi.onRequestFor(HttpServletRequest.class).with(InjectRequest.class).deliverThreadLocal(servletRequest);
+    Esdi.onRequestFor(HttpServletResponse.class).with(InjectRequest.class).deliverThreadLocal(servletResponse);
     Esdi.onRequestFor(HttpSession.class).with(InjectSession.class).deliverThreadLocal(httpSession);
 
     try {
@@ -66,7 +66,7 @@ public class ContainerSetup {
     sessionProvider.clear();
   }
 
-  public void createdRequest(ServletRequest req, ServletResponse resp) {
+  public void createdRequest(HttpServletRequest req, HttpServletResponse resp) {
     servletRequest.set(req);
     servletResponse.set(resp);
     
