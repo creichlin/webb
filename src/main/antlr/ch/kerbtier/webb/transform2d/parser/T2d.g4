@@ -6,7 +6,7 @@ VAR : '$1' | '$2' | '$3' | '$4';
  
 command : crop | border | diffMask | fit;
 
-// Commands sdas
+// Commands sd
 
 crop : 'crop(' rect ')';
 

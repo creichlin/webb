@@ -1,3 +1,15 @@
+buildscript {
+  repositories {
+    maven {
+      url "https://maven.eveoh.nl/content/repositories/releases"
+    }
+  }
+
+  dependencies {
+    classpath "nl.eveoh:gradle-aspectj:1.6"
+  }
+}
+
 
 plugins {
   id 'java'
@@ -7,6 +19,13 @@ plugins {
   id 'jacoco'
   // id 'pmd'
 }
+
+project.ext {
+    aspectjVersion = '1.8.6'
+}
+
+apply plugin: 'aspectj'
+ 
 
 
 /*
@@ -44,7 +63,7 @@ dependencies {
   compile 'org.apache.lucene:lucene-queryparser:5.3.0'
   compile 'commons-io:commons-io:2.4'
   compile 'com.github.jknack:handlebars:2.2.3'
-  compile 'org.picocontainer:picocontainer:2.15'
+
   compile 'com.yahoo.platform.yui:yuicompressor:2.4.8'
   compile('com.google.javascript:closure-compiler:r2388') {
     exclude group: 'org.apache.ant'
@@ -52,10 +71,13 @@ dependencies {
   compile 'com.google.guava:guava:18.0'
   
   compile 'ch.kerbtier.lanthanum:lanthanum:0.1.+'
+  compile 'ch.kerbtier.esdi:esdi:0.1.+'
 
-  antlr 'org.antlr:antlr4-maven-plugin:4.5.+'
+  antlr 'org.antlr:antlr4:4.5.+'
 
   testCompile 'org.testng:testng:6.9.6'
+  
+  aspectpath 'ch.kerbtier.esdi:esdi:0.1.+'
 }
 
 test {
@@ -68,6 +90,7 @@ test {
   maxHeapSize = '8m'
 }
 
+
 jar {
   baseName = 'webb'
   version =  version
@@ -78,8 +101,10 @@ jar {
 
 generateGrammarSource {
   maxHeapSize = "64m"
-  arguments += ["-package", "ch.kerbtier.webb.transform2d.parser", "-o", "build/generated-src/antlr/main/ch/kerbtier/webb/transform2d/parser", "-visitor", "-no-listener", "-long-messages"]
   
+  arguments += ["-package", "ch.kerbtier.webb.transform2d.parser", "-visitor", "-no-listener", "-long-messages"]
+  
+  /*
   doLast {
     copy {
       from 'build/generated-src/antlr/main/'
@@ -87,7 +112,7 @@ generateGrammarSource {
       into 'build/generated-src/antlr/main/ch/kerbtier/webb/transform2d/parser'
     }
     project.delete fileTree('build/generated-src/antlr/main').include('*.*')
-  }  
+  } */ 
 }
 
 jacocoTestReport {

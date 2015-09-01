@@ -8,7 +8,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.picocontainer.DefaultPicoContainer;
+import ch.kerbtier.esdi.Esdi;
+import ch.kerbtier.webb.di.InjectSingleton;
 
 @MultipartConfig()
 public class RequestHandler extends HttpServlet {
@@ -19,17 +20,13 @@ public class RequestHandler extends HttpServlet {
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
     
-    DefaultPicoContainer requestContainer = (DefaultPicoContainer)req.getAttribute("requestContainer");
-    requestContainer.getComponent(Livecycles.class).request(requestContainer);
+    Esdi.get(Livecycles.class, InjectSingleton.class).request();
   }
 
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
 
-    DefaultPicoContainer requestContainer = (DefaultPicoContainer)req.getAttribute("requestContainer");
-    requestContainer.getComponent(Livecycles.class).request(requestContainer);
+    Esdi.get(Livecycles.class, InjectSingleton.class).request();
   }
-
-  
 }

@@ -3,27 +3,27 @@ package ch.kerbtier.webb;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.picocontainer.DefaultPicoContainer;
-
+import ch.kerbtier.esdi.Esdi;
 import ch.kerbtier.webb.container.ServletContextInfo;
+import ch.kerbtier.webb.di.InjectSingleton;
+import ch.kerbtier.webb.util.ContextInfo;
 
 public class ContextListener implements ServletContextListener {
-  
+
   public static ContainerSetup containerSetup = new ContainerSetup();
-  
+
   @Override
   public void contextInitialized(ServletContextEvent sce) {
-    
-    DefaultPicoContainer contextContainer = new DefaultPicoContainer();
-    containerSetup.initializedContext(contextContainer, new ServletContextInfo(sce.getServletContext()), sce.getServletContext().getInitParameter("livecycles"));
-    sce.getServletContext().setAttribute("contextContainer", contextContainer);
+    containerSetup.init(sce.getServletContext().getInitParameter("livecycles"));
+
+    Esdi.onRequestFor(ContextInfo.class).with(InjectSingleton.class)
+        .deliverInstance(new ServletContextInfo(sce.getServletContext()));
+
+    containerSetup.initializedContext();
   }
 
   @Override
   public void contextDestroyed(ServletContextEvent sce) {
-    DefaultPicoContainer contextContainer = (DefaultPicoContainer) sce
-        .getServletContext().getAttribute("contextContainer");
-
-    containerSetup.destroyedContext(contextContainer);
+    containerSetup.destroyedContext();
   }
 }

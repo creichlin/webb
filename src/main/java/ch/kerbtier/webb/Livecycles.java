@@ -1,18 +1,17 @@
 package ch.kerbtier.webb;
 
-import org.picocontainer.DefaultPicoContainer;
 
 public interface Livecycles {
 
-  void startContext(DefaultPicoContainer container);
-  void stopContext(DefaultPicoContainer container);
+  void startContext();
+  void stopContext();
   
-  void startSession(DefaultPicoContainer container);
-  void stopSession(DefaultPicoContainer container);
+  void startSession();
+  void stopSession();
   
-  void startRequest(DefaultPicoContainer container);
-  void stopRequest(DefaultPicoContainer container);
+  void startRequest();
+  void stopRequest();
   
-  void request(DefaultPicoContainer container);
+  void request();
   
 }

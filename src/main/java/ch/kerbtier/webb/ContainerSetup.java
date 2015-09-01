@@ -2,59 +2,79 @@ package ch.kerbtier.webb;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpSession;
 
-import org.picocontainer.Characteristics;
-import org.picocontainer.DefaultPicoContainer;
-
-import ch.kerbtier.webb.util.ContextInfo;
+import ch.kerbtier.esdi.Esdi;
+import ch.kerbtier.esdi.providers.SingletonProvider;
+import ch.kerbtier.esdi.providers.ThreadLocalProvider;
+import ch.kerbtier.webb.di.InjectRequest;
+import ch.kerbtier.webb.di.InjectSession;
+import ch.kerbtier.webb.di.InjectSingleton;
+import ch.kerbtier.webb.di.InjectThreadLocal;
+import ch.kerbtier.webb.di.SessionProvider;
 
 public class ContainerSetup {
 
-  public void initializedContext(DefaultPicoContainer contextContainer, ContextInfo contextInfo, String livecycles) {
+  private SingletonProvider singletonProvider = new SingletonProvider();
+  private ThreadLocalProvider threadLocalProvider = new ThreadLocalProvider();
+  private SessionProvider sessionProvider = new SessionProvider();
+  private ThreadLocalProvider requestProvider = new ThreadLocalProvider();
+  
+  private ThreadLocal<ServletRequest> servletRequest = new ThreadLocal<>();
+  private ThreadLocal<ServletResponse> servletResponse = new ThreadLocal<>();
+  private ThreadLocal<HttpSession> httpSession = new ThreadLocal<>();
+
+  public void init(String livecycles) {
+    Esdi.register(InjectSingleton.class, singletonProvider);
+    Esdi.register(InjectThreadLocal.class, threadLocalProvider);
+    Esdi.register(InjectRequest.class, requestProvider);
+    Esdi.register(InjectSession.class, sessionProvider);
+
+    Esdi.onRequestFor(ServletRequest.class).with(InjectRequest.class).deliverThreadLocal(servletRequest);
+    Esdi.onRequestFor(ServletResponse.class).with(InjectRequest.class).deliverThreadLocal(servletResponse);
+    Esdi.onRequestFor(HttpSession.class).with(InjectSession.class).deliverThreadLocal(httpSession);
+
     try {
       Class<?> livecyclesClass = Class.forName(livecycles);
-      if(!Livecycles.class.isAssignableFrom(livecyclesClass)) {
+      if (!Livecycles.class.isAssignableFrom(livecyclesClass)) {
         throw new RuntimeException("livecycles instance must implement ch.kerbtier.webb.Livecycles");
       }
-      contextContainer.as(Characteristics.CACHE).addComponent(livecyclesClass);
+      Esdi.onRequestFor(Livecycles.class).with(InjectSingleton.class).deliver(livecyclesClass);
     } catch (ClassNotFoundException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  public void initializedContext() {
+    Esdi.get(Livecycles.class, InjectSingleton.class).startContext();
+  }
+
+  public void destroyedContext() {
+    Esdi.get(Livecycles.class, InjectSingleton.class).stopContext();
+    Esdi.clear();
+  }
+
+  public void createdSession(HttpSession session) {
+    httpSession.set(session);
+    sessionProvider.setCurrentKey(session.getId());
+    Esdi.get(Livecycles.class, InjectSingleton.class).startSession();
+  }
+
+  public void destroyedSession(HttpSession session) {
+    sessionProvider.setCurrentKey(session.getId());
+    Esdi.get(Livecycles.class, InjectSingleton.class).stopSession();
+    sessionProvider.clear();
+  }
+
+  public void createdRequest(ServletRequest req, ServletResponse resp) {
+    servletRequest.set(req);
+    servletResponse.set(resp);
     
-    contextContainer.addComponent(contextInfo);
-    contextContainer.start();
-    contextContainer.getComponent(Livecycles.class).startContext(contextContainer);
+    Esdi.get(Livecycles.class, InjectSingleton.class).startRequest();
   }
 
-  public void destroyedContext(DefaultPicoContainer contextContainer) {
-    contextContainer.getComponent(Livecycles.class).stopContext(contextContainer);
-    contextContainer.stop();
-    contextContainer.dispose();
+  public void destroyRequest() {
+    Esdi.get(Livecycles.class, InjectSingleton.class).stopRequest();
+    requestProvider.clear();
   }
-
-  public void createdSession(DefaultPicoContainer sessionContainer) {
-    sessionContainer.start();
-    sessionContainer.getComponent(Livecycles.class).startSession(sessionContainer);
-  }
-
-  public void destroyedSession(DefaultPicoContainer sessionContainer) {
-    sessionContainer.getComponent(Livecycles.class).stopSession(sessionContainer);
-    sessionContainer.stop();
-    sessionContainer.dispose();
-  }
-
-  public void createdRequest(DefaultPicoContainer requestContainer, ServletRequest req, ServletResponse resp) {
-    requestContainer.addComponent(req);
-    requestContainer.addComponent(resp);
-    requestContainer.start();
-    requestContainer.getComponent(Livecycles.class).startRequest(requestContainer);
-  }
-
-  public void destroyRequest(DefaultPicoContainer requestContainer) {
-    requestContainer.getComponent(Livecycles.class).stopRequest(
-        requestContainer);
-    requestContainer.stop();
-    requestContainer.dispose();
-  }
-
 }

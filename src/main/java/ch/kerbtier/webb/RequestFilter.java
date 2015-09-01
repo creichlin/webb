@@ -8,9 +8,6 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-
-import org.picocontainer.DefaultPicoContainer;
 
 public class RequestFilter implements Filter {
 
@@ -23,19 +20,11 @@ public class RequestFilter implements Filter {
   public void doFilter(ServletRequest req, ServletResponse resp,
       FilterChain chain) throws IOException, ServletException {
 
-    DefaultPicoContainer sessionContainer = (DefaultPicoContainer) ((HttpServletRequest) req)
-        .getSession().getAttribute("sessionContainer");
-
-    DefaultPicoContainer requestContainer = new DefaultPicoContainer(
-        sessionContainer);
-
-    req.setAttribute("requestContainer", requestContainer);
-
-    ContextListener.containerSetup.createdRequest(requestContainer, req, resp);
+    ContextListener.containerSetup.createdRequest(req, resp);
 
     chain.doFilter(req, resp);
     
-    ContextListener.containerSetup.destroyRequest(requestContainer);
+    ContextListener.containerSetup.destroyRequest();
   }
 
   @Override
