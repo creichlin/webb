@@ -14,17 +14,23 @@ import javax.imageio.ImageIO;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 
+import ch.kerbtier.esdi.Inject;
+import ch.kerbtier.webb.di.InjectSingleton;
 import ch.kerbtier.webb.transform2d.parser.T2dExecuteVisitor;
 import ch.kerbtier.webb.transform2d.parser.T2dLexer;
 import ch.kerbtier.webb.transform2d.parser.T2dParser;
 import ch.kerbtier.webb.transform2d.parser.T2dParser.OperationContext;
 import ch.kerbtier.webb.util.Configuration;
 
+@Inject
 public class ImageTransformer {
 
   private String localBasePath;
 
-  public ImageTransformer(Configuration config) {
+  @InjectSingleton
+  private Configuration config;
+  
+  public ImageTransformer() {
     localBasePath = config.get("t2d.localBasePath", "public");
   }
 
