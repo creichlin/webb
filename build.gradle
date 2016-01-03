@@ -64,7 +64,9 @@ dependencies {
   compile 'commons-io:commons-io:2.4'
   compile 'com.github.jknack:handlebars:2.2.3'
 
-  compile 'com.yahoo.platform.yui:yuicompressor:2.4.8'
+  compile('com.yahoo.platform.yui:yuicompressor:2.4.8') {
+    exclude module: 'js' 
+  }
   compile('com.google.javascript:closure-compiler:r2388') {
     exclude group: 'org.apache.ant'
   }
