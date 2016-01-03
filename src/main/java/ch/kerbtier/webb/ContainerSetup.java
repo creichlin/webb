@@ -69,7 +69,8 @@ public class ContainerSetup {
   public void createdRequest(HttpServletRequest req, HttpServletResponse resp) {
     servletRequest.set(req);
     servletResponse.set(resp);
-    
+    httpSession.set(req.getSession());
+    sessionProvider.setCurrentKey(req.getSession().getId());
     Esdi.get(Livecycles.class, InjectSingleton.class).startRequest();
   }
 
