@@ -68,7 +68,13 @@ public class Pictomizer {
     boolean grey = isGreyScale(colors);
 
     int pngMax = Math.min(2000, source.getHeight() * source.getWidth() / 10);
-
+    
+    // if the width or height are less then jpeg block-size, use png
+    if(source.getHeight() < 16 || source.getWidth() < 16) {
+      pngMax = Integer.MAX_VALUE;
+    }
+    
+    
     boolean indexedColors = false;
 
     if (colors.size() < pngMax || alpha) {
