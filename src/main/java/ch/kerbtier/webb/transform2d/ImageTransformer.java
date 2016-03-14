@@ -131,9 +131,8 @@ public class ImageTransformer {
 
         return visitor.getLastOperation();
       } catch (Exception e) {
-        e.printStackTrace();
+        throw new RuntimeException(e);
       }
-      return null;
 
     } else {
       return imgs.get(imgs.size() - 1);
