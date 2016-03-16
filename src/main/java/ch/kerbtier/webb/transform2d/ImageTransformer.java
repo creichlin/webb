@@ -126,14 +126,11 @@ public class ImageTransformer {
         OperationContext tree = parser.operation(); // parse
 
         T2dExecuteVisitor visitor = new T2dExecuteVisitor(imgs);
-
         visitor.visit(tree);
-
         return visitor.getLastOperation();
       } catch (Exception e) {
-        e.printStackTrace();
+        throw new RuntimeException(e);
       }
-      return null;
 
     } else {
       return imgs.get(imgs.size() - 1);
