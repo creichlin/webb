@@ -9,7 +9,7 @@ import ch.kerbtier.esdi.Inject;
 
 @Inject
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE, ElementType.FIELD })
+@Target({ ElementType.FIELD })
 public @interface InjectRequest {
 
 }

@@ -1,12 +1,11 @@
 buildscript {
   repositories {
-    maven {
-      url "https://maven.eveoh.nl/content/repositories/releases"
-    }
+    mavenCentral()
+    mavenLocal()
   }
 
   dependencies {
-    classpath "nl.eveoh:gradle-aspectj:1.6"
+    classpath 'ch.kerbtier.esdi-injector:esdi-injector:0.1.+'
   }
 }
 
@@ -17,14 +16,9 @@ plugins {
   id 'eclipse'
   id 'maven'
   id 'jacoco'
-  // id 'pmd'
 }
 
-project.ext {
-    aspectjVersion = '1.8.6'
-}
-
-apply plugin: 'aspectj'
+apply plugin: 'kerbtier.esdi'
  
 
 
@@ -46,8 +40,8 @@ group = 'ch.kerbtier.webb'
 version = getVersionName()
 
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 repositories {
   mavenLocal()
@@ -78,8 +72,6 @@ dependencies {
   antlr 'org.antlr:antlr4:4.5.+'
 
   testCompile 'org.testng:testng:6.9.6'
-  
-  aspectpath 'ch.kerbtier.esdi:esdi:0.1.+'
 }
 
 test {
@@ -105,10 +97,6 @@ generateGrammarSource {
   maxHeapSize = "64m"
   
   arguments += ["-package", "ch.kerbtier.webb.transform2d.parser", "-visitor", "-no-listener", "-long-messages"]
-}
-
-compileAspect {
-  additionalAjcArgs = ['showweaveinfo': 'true', 'verbose': 'true', 'time': 'true']
 }
 
 jacocoTestReport {

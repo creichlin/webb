@@ -7,10 +7,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import ch.kerbtier.esdi.Inject;
 import ch.kerbtier.webb.di.InjectRequest;
 
-@Inject
 public class HttpInfo {
   
   @InjectRequest
@@ -22,6 +20,13 @@ public class HttpInfo {
    * @return
    */
   public String getPath() {
+    
+    
+    System.out.println("request is " + request);
+    
+    
+    
+    
     
     // we have to calculate path minus contextPath ourselves
     // pathInfo returns null for default servlet
