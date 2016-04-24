@@ -20,14 +20,6 @@ public class HttpInfo {
    * @return
    */
   public String getPath() {
-    
-    
-    System.out.println("request is " + request);
-    
-    
-    
-    
-    
     // we have to calculate path minus contextPath ourselves
     // pathInfo returns null for default servlet
     // and if servlet mapping is a path this part would be excluded
