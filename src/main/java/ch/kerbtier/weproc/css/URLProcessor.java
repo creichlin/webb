@@ -34,7 +34,7 @@ public class URLProcessor<T extends URLModifier> implements Processor {
         m.appendReplacement(sb, replacement);
       } catch (IndexOutOfBoundsException e) {
         System.out.println("problem in url in: " + source.get().substring(m.start()));
-        System.out.println("replacemnt: " + replacement);
+        System.out.println("replacement: " + replacement);
         e.printStackTrace();
       }
     }

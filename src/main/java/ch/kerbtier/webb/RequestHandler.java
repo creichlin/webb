@@ -1,6 +1,8 @@
 package ch.kerbtier.webb;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -15,6 +17,7 @@ import ch.kerbtier.webb.di.InjectSingleton;
 public class RequestHandler extends HttpServlet {
 
   private static final long serialVersionUID = 1L;
+  private Logger logger = Logger.getLogger(RequestHandler.class.getName());
 
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -27,10 +30,19 @@ public class RequestHandler extends HttpServlet {
   }
 
   private void doIt(HttpServletRequest req, HttpServletResponse resp) {
-    ContextListener.containerSetup.createdRequest((HttpServletRequest) req, (HttpServletResponse) resp);
+    try {
+      ContextListener.containerSetup.createdRequest((HttpServletRequest) req, (HttpServletResponse) resp);
 
-    Esdi.get(Livecycles.class, InjectSingleton.class).request();
+      Esdi.get(Livecycles.class, InjectSingleton.class).request();
 
-    ContextListener.containerSetup.destroyRequest();
+      ContextListener.containerSetup.destroyRequest();
+    } catch (Exception e) {
+      logger.log(Level.WARNING, "Error during request", e);
+      try {
+        resp.sendError(500);
+      } catch (IOException e1) {
+        e1.printStackTrace();
+      }
+    }
   }
 }
